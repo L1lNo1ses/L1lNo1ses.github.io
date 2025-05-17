@@ -3,78 +3,87 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Kodi Addon Repository</title>
+  <title>Kodi Addon Repo - Éjszakai Szalon</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #0a192f; /* mély tengerkék */
-      color: #cbd5e1; /* halvány kékeszürke */
-      margin: 0;
-      padding: 20px;
+      margin: 0; 
+      padding: 0 20px; 
+      font-family: 'Orbitron', sans-serif;
+      background: linear-gradient(135deg, #0d1b2a, #1b263b 70%);
+      color: #a1caff;
+      height: 100vh;
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      justify-content: center;
     }
     header {
       text-align: center;
-      margin-bottom: 30px;
+      margin-bottom: 40px;
+      text-shadow: 0 0 10px #3fa9f5;
     }
     h1 {
+      font-size: 3rem;
       margin: 0;
-      font-weight: 700;
-      color: #3ea6ff; /* élénk kék */
-      text-shadow: 0 0 8px #1e40af; /* lágy fény */
+      color: #3fa9f5;
+      letter-spacing: 3px;
     }
     p {
-      color: #94a3b8; /* halkabb kékeszürke */
+      font-size: 1.1rem;
+      color: #74a9ffcc;
+      margin-top: 5px;
     }
     ul {
       list-style: none;
       padding: 0;
-      max-width: 600px;
-      margin: 0 auto;
+      width: 100%;
+      max-width: 480px;
+      border: 2px solid #3fa9f5;
+      border-radius: 15px;
+      background: rgba(10, 25, 45, 0.75);
+      box-shadow: 0 0 20px #3fa9f5aa;
     }
     li {
-      background: rgba(30, 64, 175, 0.3); /* áttetsző kékes háttér */
-      margin-bottom: 15px;
-      padding: 15px 20px;
-      border-radius: 8px;
-      transition: background 0.3s ease;
-      box-shadow: 0 2px 6px rgba(30, 64, 175, 0.5);
+      border-bottom: 1px solid #3fa9f5aa;
+      padding: 18px 25px;
+      transition: background 0.3s ease, transform 0.2s ease;
+      cursor: pointer;
+    }
+    li:last-child {
+      border-bottom: none;
     }
     li:hover {
-      background: rgba(62, 166, 255, 0.6);
-      box-shadow: 0 4px 12px rgba(62, 166, 255, 0.8);
+      background: #3fa9f5bb;
+      color: #0d1b2a;
+      transform: scale(1.05);
+      box-shadow: 0 0 15px #3fa9f5cc;
     }
     a {
-      color: #e0e7ff; /* világos kék */
+      color: inherit;
       text-decoration: none;
       font-weight: 600;
-      font-size: 1.1em;
-    }
-    a:hover {
-      text-decoration: underline;
-      color: #a5b4fc; /* lágyabb világos kék */
+      font-size: 1.2rem;
+      display: block;
     }
     footer {
       margin-top: 50px;
-      text-align: center;
-      font-size: 0.9em;
-      color: #64748b; /* halk kékeszürke */
+      font-size: 0.9rem;
+      color: #3fa9f588;
+      text-shadow: none;
     }
   </style>
 </head>
 <body>
   <header>
-    <h1>Kodi Addon Repository</h1>
-    <p>Friss addonok és repo fájlok letöltése</p>
+    <h1>Kodi Addon Repo</h1>
+    <p>Friss, stabil, és menő kiegészítők egy helyen</p>
   </header>
-  <main>
-    <ul>
-      <li><a href="repository.thecrew-0.3.7.zip">repository.thecrew-0.3.7.zip</a></li>
-      <li><a href="repository.movieshark-2.7.2.zip">repository.movieshark-2.7.2.zip</a></li>
-      <li><a href="plugin.audio.radio_de-3.0.9+matrix.1.zip">plugin.audio.radio_de-3.0.9+matrix.1.zip</a></li>
-    </ul>
-  </main>
-  <footer>
-    &copy; 2025 Tibi's Kodi Repo
-  </footer>
+  <ul>
+    <li><a href="repository.thecrew-0.3.7.zip">repository.thecrew-0.3.7.zip</a></li>
+    <li><a href="repository.movieshark-2.7.2.zip">repository.movieshark-2.7.2.zip</a></li>
+    <li><a href="plugin.audio.radio_de-3.0.9+matrix.1.zip">plugin.audio.radio_de-3.0.9+matrix.1.zip</a></li>
+  </ul>
+  <footer>&copy; 2025 Tibi's Kodi Repo</footer>
 </body>
 </html>
