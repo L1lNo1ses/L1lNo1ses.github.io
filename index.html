@@ -1,101 +1,13 @@
 <!DOCTYPE html>
 <html lang="hu">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Kodi Addon Repo</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-      color: #ffffff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      overflow: hidden;
-      z-index: 1;
-    }
 
-    h1 {
-      font-size: 2em;
-      margin-bottom: 20px;
-      color: #cce6ff;
-      text-shadow: 0 0 5px #00f7ff50;
-    }
-
-    a {
-      color: #90caf9;
-      text-decoration: none;
-      background: rgba(255, 255, 255, 0.05);
-      padding: 10px 20px;
-      margin: 8px;
-      border-radius: 8px;
-      transition: background 0.3s ease, transform 0.2s ease;
-      box-shadow: 0 0 10px #00f7ff20;
-    }
-
-    a:hover {
-      background: rgba(255, 255, 255, 0.1);
-      transform: scale(1.05);
-    }
-
-    /* Füst animáció */
-    .smoke-wrapper {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      overflow: hidden;
-      z-index: 0;
-    }
-
-    .smoke {
-      position: absolute;
-      bottom: -200px;
-      left: 50%;
-      width: 300px;
-      height: 300px;
-      background: radial-gradient(circle, rgba(20, 20, 20, 0.3) 0%, rgba(10, 10, 10, 0) 80%);
-      animation: smokeRise 25s linear infinite;
-      opacity: 0.6;
-      transform: translateX(-50%);
-      filter: blur(3px);
-    }
-
-    .smoke.delay {
-      animation-delay: 12s;
-    }
-
-    @keyframes smokeRise {
-      0% {
-        transform: translateX(-50%) translateY(0) scale(1);
-        opacity: 0.6;
-      }
-      50% {
-        transform: translateX(-60%) translateY(-50vh) scale(1.3);
-        opacity: 0.3;
-      }
-      100% {
-        transform: translateX(-40%) translateY(-100vh) scale(1.6);
-        opacity: 0;
-      }
-    }
-  </style>
 </head>
 <body>
   <h1>Kodi Addon Tárház</h1>
   <a href="repository.thecrew-0.3.7.zip">Letöltés: The Crew Repo</a>
   <a href="repository.movieshark-2.7.2.zip">Letöltés: MovieShark Repo</a>
   <a href="plugin.audio.radio_de-3.0.9+matrix.1.zip">Letöltés: Radio.de Plugin</a>
-
-  <div class="smoke-wrapper">
-    <div class="smoke"></div>
-    <div class="smoke delay"></div>
-  </div>
 </body>
 </html>
