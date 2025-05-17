@@ -72,9 +72,54 @@
       color: #3fa9f588;
       text-shadow: none;
     }
+    .smoke-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.smoke {
+  position: absolute;
+  bottom: -200px;
+  left: 50%;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0) 80%);
+  animation: smokeRise 25s linear infinite;
+  opacity: 0.4;
+  transform: translateX(-50%);
+}
+
+.smoke.delay {
+  animation-delay: 10s;
+}
+
+@keyframes smokeRise {
+  0% {
+    transform: translateX(-50%) translateY(0) scale(1);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translateX(-60%) translateY(-50vh) scale(1.3);
+    opacity: 0.2;
+  }
+  100% {
+    transform: translateX(-40%) translateY(-100vh) scale(1.6);
+    opacity: 0;
+  }
+}
   </style>
 </head>
 <body>
+  <div class="smoke-wrapper">
+    <div class="smoke"></div>
+    <div class="smoke delay"></div>
+  </div>
   <header>
     <h1>Kodi Addon Repo</h1>
     <p>Friss, stabil, és menő kiegészítők egy helyen</p>
