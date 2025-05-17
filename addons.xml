@@ -1,0 +1,28 @@
+<addons>
+  <addon id="repository.thecrew" version="0.3.7" name="The Crew Repository" provider-name="Tibi">
+    <summary lang="en">The Crew repo with all its addons</summary>
+    <description lang="en">A repository containing The Crew, MovieShark, and Radio DE addons.</description>
+    <license>GPL v3</license>
+    <platform>all</platform>
+    <arch>all</arch>
+    <extension point="xbmc.addon.repository" library="repository.thecrew-0.3.7.zip"/>
+  </addon>
+
+  <addon id="repository.movieshark" version="2.7.2" name="MovieShark Repository" provider-name="Tibi">
+    <summary lang="en">MovieShark repo for movies and shows</summary>
+    <description lang="en">Contains MovieShark addons and utilities.</description>
+    <license>GPL v3</license>
+    <platform>all</platform>
+    <arch>all</arch>
+    <extension point="xbmc.addon.repository" library="repository.movieshark-2.7.2.zip"/>
+  </addon>
+
+  <addon id="plugin.audio.radio_de" version="3.0.9" name="Radio DE Audio Plugin" provider-name="Tibi">
+    <summary lang="en">German radio streaming plugin</summary>
+    <description lang="en">Streams German radio stations live.</description>
+    <license>GPL v3</license>
+    <platform>all</platform>
+    <arch>all</arch>
+    <extension point="xbmc.addon.plugin" library="plugin.audio.radio_de-3.0.9+matrix.1.zip"/>
+  </addon>
+</addons>
