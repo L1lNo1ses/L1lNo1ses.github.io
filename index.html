@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>My Kodi Addon Repository</title>
+  <title>Kodi Addon Repository</title>
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #121212;
-      color: #eee;
+      background: #0a192f; /* mély tengerkék */
+      color: #cbd5e1; /* halvány kékeszürke */
       margin: 0;
       padding: 20px;
     }
@@ -19,7 +19,11 @@
     h1 {
       margin: 0;
       font-weight: 700;
-      color: #1db954; /* Spotify zöld? Csak hogy feldobja */
+      color: #3ea6ff; /* élénk kék */
+      text-shadow: 0 0 8px #1e40af; /* lágy fény */
+    }
+    p {
+      color: #94a3b8; /* halkabb kékeszürke */
     }
     ul {
       list-style: none;
@@ -28,29 +32,32 @@
       margin: 0 auto;
     }
     li {
-      background: #222;
+      background: rgba(30, 64, 175, 0.3); /* áttetsző kékes háttér */
       margin-bottom: 15px;
       padding: 15px 20px;
       border-radius: 8px;
       transition: background 0.3s ease;
+      box-shadow: 0 2px 6px rgba(30, 64, 175, 0.5);
     }
     li:hover {
-      background: #1db954;
+      background: rgba(62, 166, 255, 0.6);
+      box-shadow: 0 4px 12px rgba(62, 166, 255, 0.8);
     }
     a {
-      color: #eee;
+      color: #e0e7ff; /* világos kék */
       text-decoration: none;
       font-weight: 600;
       font-size: 1.1em;
     }
     a:hover {
       text-decoration: underline;
+      color: #a5b4fc; /* lágyabb világos kék */
     }
     footer {
       margin-top: 50px;
       text-align: center;
       font-size: 0.9em;
-      color: #777;
+      color: #64748b; /* halk kékeszürke */
     }
   </style>
 </head>
