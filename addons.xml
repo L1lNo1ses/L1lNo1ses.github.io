@@ -1,0 +1,9 @@
+<addons>
+  <addon id="repository.thecrew" name="The Crew Repository" version="0.3.7" provider-name="The Crew Team">
+    <extension point="xbmc.addon.repository" name="The Crew Repository">
+      <info compressed="false">http://yourserver.com/repo/addons.xml</info>
+      <checksum>http://yourserver.com/repo/addons.xml.md5</checksum>
+      <datadir zip="true">http://yourserver.com/repo/</datadir>
+    </extension>
+  </addon>
+</addons>
