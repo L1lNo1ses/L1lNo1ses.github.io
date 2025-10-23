@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Életmenedzser</title>
+<style>
+body {margin:0;font-family:'Roboto',sans-serif;background:linear-gradient(to right,#f0f2f5,#dfe9f3);min-height:100vh;display:flex;justify-content:center;padding:20px;}
+.container {width:100%; max-width:1200px;}
+h1,h2,h3 {text-align:center;color:#4a4a4a;}
+.card {background:#fff;border-radius:20px;padding:20px;box-shadow:0 15px 30px rgba(0,0,0,0.2);margin:20px 0;}
+.grid {display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;}
+button {padding:8px 12px;border:none;border-radius:10px;cursor:pointer;background:#fdd835;font-weight:bold;margin:5px;transition:0.3s;box-shadow:0 4px 10px rgba(0,0,0,0.15);}
+button:hover {background:#ffc107; transform:translateY(-2px);}
+.weekdays, .days {display:grid; grid-template-columns:repeat(7,1fr); text-align:center; gap:4px;}
+.weekdays div {font-weight:bold; color:#555;}
+.day {min-height:50px;display:flex;justify-content:center;align-items:center;flex-direction:column;border-radius:10px;background:#f7f7f7;position:relative;transition:0.3s;box-shadow:0 2px 5px rgba(0,0,0,0.1);}
+.day:hover {background:#ffe082; transform:translateY(-2px);}
+.day.today {background:#ffca28; font-weight:bold; box-shadow:0 4px 10px rgba(0,0,0,0.2);}
+.tooltiptext {position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:3px 8px;border-radius:6px;font-size:12px;display:none;white-space: pre-line;text-align:left;}
+.day:hover .tooltiptext {display:block;}
+#calendarHeader {height:100px;border-radius:15px;margin-bottom:10px;background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center;color:white;font-size:24px;font-weight:bold;text-shadow:2px 2px 5px rgba(0,0,0,0.6);}
+textarea, input {width:100%; padding:8px; border-radius:8px; border:1px solid #ccc; margin-bottom:8px;}
+ul {list-style:none; padding:0;}
+li {background:#f7f7f7; margin:5px 0; padding:8px; border-radius:10px; display:flex; justify-content:space-between; align-items:center;}
+li span {flex-grow:1; cursor:pointer;}
+</style>
+</head>
+<body onload="renderCalendar()">
+<div class="container">
+    <div class="card"><h1>Életmenedzser</h1><p>Itt minden fontos dolgod egy helyen elérhető: naptár, események, napló és teendők.</p></div>
+    <div class="grid">
+        <!-- NAPTÁR ÉS ESEMÉNYEK -->
+        <div class="card">
+            <div id="calendarHeader"></div>
+            <div style="text-align:center; margin:10px;">
+                <button onclick="prevMonth()">◀</button>
+                <button onclick="toggleMoon()">Holdfázis nézet</button>
+                <button onclick="nextMonth()">▶</button>
+            </div>
+            <div class="weekdays">
+                <div>H</div><div>K</div><div>Sze</div><div>Cs</div><div>P</div><div>Szo</div><div>V</div>
+            </div>
+            <div class="days" id="calendarDays"></div>
+            <hr>
+            <h3>Események a kiválasztott naphoz</h3>
+            <input type="time" id="eventTime">
+            <input type="text" id="eventInput" placeholder="Új esemény">
+            <button onclick="addCalendarEvent()">Hozzáadás</button>
+            <ul id="eventList"></ul>
+        </div>
+
+        <!-- TO-DO -->
+        <div class="card">
+            <h2>To-Do / Emlékeztető</h2>
+            <input type="text" id="todoInput" placeholder="Új feladat">
+            <button onclick="addTodo()">Hozzáadás</button>
+            <ul class="todo-list" id="todoList"></ul>
+        </div>
+    </div>
+</div>
+
+<script>
+// Változók
+const monthNames=["Január","Február","Március","Április","Május","Június","Július","Augusztus","Szeptember","Október","November","December"];
+let today=new Date();
+let calendarMonth=today.getMonth();
+let calendarYear=today.getFullYear();
+let showMoon=false;
+let selectedDay=today.getDate();
+
+// Ünnepek
+const holidayDates={"0-31": {name:"Imbolc", icon:"❄️"},"2-20": {name:"Ostara", icon:"🌸"},"7-1": {name:"Lughnasadh", icon:"🌾"},"9-31": {name:"Samhain", icon:"🎃"},"11-6": {name:"Mikulás", icon:"🎅"},"11-24": {name:"Karácsony", icon:"🎄"},"11-31": {name:"Szilveszter", icon:"🎉"}};
+
+// Események
+let calendarEvents=JSON.parse(localStorage.getItem("calendarEvents")||"{}");
+
+// Holdfázis
+function getMoonPhase(y,m,d){
+    const lp=29.53;
+    const c=new Date(y,m,d);
+    const newMoon=new Date(2023,0,21);
+    const diff=(c-newMoon)/(1000*60*60*24);
+    const phase=diff%lp;
+    if(phase<1) return {icon:"🌑",name:"Újhold"};
+    if(phase<7.4) return {icon:"🌒",name:"Növő félhold"};
+    if(phase<14.8) return {icon:"🌕",name:"Telihold"};
+    if(phase<22.1) return {icon:"🌘",name:"Fogyó félhold"};
+    return {icon:"🌑",name:"Újhold"};
+}
+
+// Évszakos háttér (helyi képek angol nevűek)
+function getSeasonImage(month){
+    if([2,3,4].includes(month)) return "url('images/spring.jpg')";
+    if([5,6,7].includes(month)) return "url('images/summer.jpg')";
+    if([8,9,10].includes(month)) return "url('images/autumn.jpg')";
+    return "url('images/winter.jpg')";
+}
+
+// Naptár render
+function getFirstDay(y,m){ let d=new Date(y,m,1).getDay(); return d===0?6:d-1;}
+function renderCalendar(){
+    const header=document.getElementById("calendarHeader");
+    header.style.backgroundImage=getSeasonImage(calendarMonth);
+    header.textContent=`${monthNames[calendarMonth]} ${calendarYear}`;
+    const daysContainer=document.getElementById("calendarDays");
+    daysContainer.innerHTML="";
+    const firstDay=getFirstDay(calendarYear,calendarMonth);
+    const daysInMonth=new Date(calendarYear,calendarMonth+1,0).getDate();
+    for(let i=0;i<firstDay;i++) daysContainer.appendChild(document.createElement("div"));
+    for(let d=1; d<=daysInMonth; d++){
+        const div=document.createElement("div");
+        div.classList.add("day");
+        let text=d;
+        let tip="";
+        const key=`${calendarMonth}-${d}`;
+        const dateKey=`${calendarYear}-${calendarMonth}-${d}`;
+        if(showMoon){ const moon=getMoonPhase(calendarYear,calendarMonth,d); text+=" "+moon.icon; tip+=moon.name;}
+        else if(holidayDates[key]){ text+=" "+holidayDates[key].icon; tip+=holidayDates[key].name;}
+        if(calendarEvents[dateKey] && calendarEvents[dateKey].length>0){ div.style.background="skyblue"; tip+=(tip?"\n":"")+calendarEvents[dateKey].join("\n");}
+        div.textContent=text;
+        if(tip){ const t=document.createElement("span"); t.classList.add("tooltiptext"); t.textContent=tip; div.appendChild(t);}
+        div.onclick=()=>{selectedDay=d; renderEvents(); renderCalendar();};
+        if(d===today.getDate() && calendarMonth===today.getMonth() && calendarYear===today.getFullYear()) div.classList.add("today");
+        daysContainer.appendChild(div);
+    }
+}
+
+// Események render
+function renderEvents(){
+    const list=document.getElementById("eventList");
+    list.innerHTML="";
+    const dateKey=`${calendarYear}-${calendarMonth}-${selectedDay}`;
+    const events=calendarEvents[dateKey]||[];
+    events.forEach((ev,i)=>{
+        const li=document.createElement("li");
+        const span=document.createElement("span"); span.textContent=ev; li.appendChild(span);
+        const del=document.createElement("button"); del.textContent="✖";
+        del.onclick=(e)=>{e.stopPropagation(); events.splice(i,1); calendarEvents[dateKey]=events; localStorage.setItem("calendarEvents",JSON.stringify(calendarEvents)); renderEvents(); renderCalendar();};
+        li.appendChild(del); list.appendChild(li);
+    });
+}
+
+// Esemény hozzáadás
+function addCalendarEvent(){
+    const input=document.getElementById("eventInput");
+    const timeInput=document.getElementById("eventTime");
+    const text=input.value.trim();
+    const time=timeInput.value;
+    if(!text) return;
+    const dateKey=`${calendarYear}-${calendarMonth}-${selectedDay}`;
+    if(!calendarEvents[dateKey]) calendarEvents[dateKey]=[];
+    calendarEvents[dateKey].push(time ? `${time} – ${text}` : text);
+    localStorage.setItem("calendarEvents",JSON.stringify(calendarEvents));
+    input.value=""; timeInput.value="";
+    renderEvents(); renderCalendar();
+}
+
+// Month toggle
+function prevMonth(){calendarMonth--; if(calendarMonth<0){calendarMonth=11; calendarYear--;} renderCalendar(); renderEvents();}
+function nextMonth(){calendarMonth++; if(calendarMonth>11){calendarMonth=0; calendarYear++;} renderCalendar(); renderEvents();}
+function toggleMoon(){showMoon=!showMoon; renderCalendar(); renderEvents();}
+
+// NAPLÓ
+let diaryUnlocked=false;
+let diaryDate=new Date();
+const diaryContent=document.getElementById("diaryContent");
+const diaryDateSpan=document.getElementById("diaryDate");
+function unlockDiary(){
+    const pwd=document.getElementById("diaryPassword").value;
+    if(pwd==="titkos"){diaryUnlocked=true; document.getElementById("diaryLock").style.display="none"; document.getElementById("diaryContentWrapper").style.display="block"; updateDiary();}
+    else alert("Hibás kód!");
+}
+function updateDiary(){
+    if(!diaryUnlocked) return;
+    diaryDateSpan.textContent=`${monthNames[diaryDate.getMonth()]} ${diaryDate.getDate()}`;
+    const key=`diary_${diaryDate.getFullYear()}_${diaryDate.getMonth()}_${diaryDate.getDate()}`;
+    diaryContent.value=localStorage.getItem(key)||"";
+}
+function saveDiary(){if(!diaryUnlocked) return; const key=`diary_${diaryDate.getFullYear()}_${diaryDate.getMonth()}_${diaryDate.getDate()}`; localStorage.setItem(key, diaryContent.value);}
+diaryContent.addEventListener("input", saveDiary);
+function prevDay(){if(!diaryUnlocked) return; diaryDate.setDate(diaryDate.getDate()-1); updateDiary();}
+function nextDay(){if(!diaryUnlocked) return; diaryDate.setDate(diaryDate.getDate()+1); updateDiary();}
+
+// TO-DO
+const todoInput=document.getElementById("todoInput");
+const todoList=document.getElementById("todoList");
+let todos=JSON.parse(localStorage.getItem("todos")||"[]");
+function renderTodos(){todoList.innerHTML=""; todos.forEach((t,i)=>{const li=document.createElement("li"); const span=document.createElement("span"); span.textContent=t.text; if(t.done) span.style.textDecoration="line-through"; span.onclick=()=>{todos[i].done=!todos[i].done; saveTodos();}; const del=document.createElement("button"); del.textContent="✖"; del.onclick=(e)=>{e.stopPropagation(); todos.splice(i,1); saveTodos();}; li.appendChild(span); li.appendChild(del); todoList.appendChild(li);});}
+function addTodo(){if(todoInput.value.trim()==="") return; todos.push({text:todoInput.value,done:false}); todoInput.value=""; saveTodos();}
+function saveTodos(){localStorage.setItem("todos",JSON.stringify(todos)); renderTodos();}
+
+// INIT
+renderCalendar(); renderEvents(); renderTodos();
+// FIX: néha csak második futásra rajzol rendesen
+setTimeout(() => {
+  renderCalendar();
+}, 100);
+</script>
+</body>
+</html>

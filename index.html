@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Linkek</title>
+  <style>
+    /* Alap body stílusok */
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(to bottom right, #1e1e1e, #3a3a3a);
+      font-family: Arial, sans-serif;
+    }
+
+    /* Konténer a gomboknak */
+    .button-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px; /* Távolság a gombok között */
+    }
+
+    /* Gomb stílusok */
+    .link-button {
+      text-decoration: none;
+      color: white;
+      background-color: #007bff;
+      padding: 15px 30px;
+      border-radius: 8px;
+      font-size: 18px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .link-button:hover {
+      background-color: #0056b3;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="button-container">
+	<h1>Linkeim:<h1>
+	<a href="./web.html"class="link-button">Élet Meneger esemény kezelő naptár</a>
+    <a href="https://www.instagram.com/_txbor_/" target="_blank" class="link-button">Instagram</a>
+    <a href="https://discord.com/users/1190710992410251270" target="_blank" class="link-button">Discord</a>
+    <a href="https://github.com/L1lNo1ses/L1lNo1ses" target="_blank" class="link-button">GitHub</a>
+  </div>
+
+</body>
+</html>
