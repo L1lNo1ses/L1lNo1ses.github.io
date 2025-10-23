@@ -1,55 +1,317 @@
 <!DOCTYPE html>
 <html lang="hu">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Linkek</title>
-  <style>
-    /* Alap body stílusok */
-    body {
-      margin: 0;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: linear-gradient(to bottom right, #1e1e1e, #3a3a3a);
-      font-family: Arial, sans-serif;
-    }
-
-    /* Konténer a gomboknak */
-    .button-container {
-      display: flex;
-      flex-direction: column;
-      gap: 20px; /* Távolság a gombok között */
-    }
-
-    /* Gomb stílusok */
-    .link-button {
-      text-decoration: none;
-      color: white;
-      background-color: #007bff;
-      padding: 15px 30px;
-      border-radius: 8px;
-      font-size: 18px;
-      text-align: center;
-      transition: all 0.3s ease;
-    }
-
-    .link-button:hover {
-      background-color: #0056b3;
-      transform: scale(1.05);
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interaktív Magyar Naptár + Holdfázis</title>
+<style>
+*{box-sizing:border-box;font-family:"Segoe UI",sans-serif;transition:0.3s;}
+body{background:#e6ebf2;color:#222;display:flex;flex-direction:column;align-items:center;margin:0;padding:20px;}
+.dark-mode{background:#121212;color:#eee;}
+button{padding:6px 12px;border:none;border-radius:8px;cursor:pointer;transition:0.2s;}
+button:hover{opacity:0.85;}
+.calendar{width:360px;background:white;border-radius:14px;box-shadow:0 6px 20px rgba(0,0,0,0.15);overflow:hidden;margin-bottom:20px;transition:0.3s;}
+.dark-mode .calendar{background:#1e1e1e;color:#eee;}
+.month-header{color:white;text-align:center;font-weight:bold;font-size:1.6rem;padding:25px 0;background-size:cover;background-position:center;text-shadow:0 2px 5px rgba(0,0,0,0.8);}
+.controls{display:flex;justify-content:space-between;align-items:center;padding:10px;}
+.weekdays,.days{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+.weekdays{background:#f5f5f5;padding:6px 0;text-align:center;font-weight:bold;color:#444;}
+.dark-mode .weekdays{background:#2a2a2a;color:#ddd;}
+.day{text-align:center;padding:8px 0;border-radius:6px;transition:all 0.2s;cursor:pointer;position:relative;background:#fff;color:#222;}
+.dark-mode .day{background:#2c2c2c;color:#eee;}
+.day:hover{background:#e8f0fe;}
+.dark-mode .day:hover{background:#3a3a3a;}
+.today{background:#0078ff;color:white;font-weight:bold;}
+.dark-mode .today{background:#3399ff;}
+.selected{border:2px solid red;background:#ffeaea;}
+.has-event{background:skyblue !important;}
+.holiday-nepi{background:lightgreen;}
+.dark-mode .holiday-nepi{background:#3a5f3a;}
+.holiday-pogany{background:plum;}
+.dark-mode .holiday-pogany{background:#5a2a5a;}
+.tooltip{position:fixed;background:rgba(0,0,0,0.85);color:white;padding:6px 12px;border-radius:6px;max-width:240px;text-align:center;opacity:0;transition:opacity 0.2s;pointer-events:none;z-index:9999;}
+.dark-mode .tooltip{background:rgba(255,255,255,0.85);color:#000;}
+#switchViewBtn,#toggleDarkMode{width:calc(100% - 20px);margin-bottom:10px;font-weight:bold;color:white;}
+#switchViewBtn{background:#28a745;}
+#switchViewBtn:hover{background:#1e7e34;}
+#toggleDarkMode{background:#ff9900;}
+#toggleDarkMode:hover{background:#cc7a00;}
+#eventPanel{width:360px;background:white;border-radius:14px;box-shadow:0 6px 20px rgba(0,0,0,0.15);padding:15px;}
+.dark-mode #eventPanel{background:#1e1e1e;color:#eee;}
+#selectedDateText{text-align:center;font-weight:bold;margin-bottom:10px;}
+input,button{padding:6px;border-radius:6px;border:1px solid #ccc;margin:4px 0;}
+#addEventBtn{background:#0078ff;color:white;width:100%;}
+#addEventBtn:hover{background:#005ecb;}
+ul{list-style:none;padding:0;}
+li{background:#f0f0f0;padding:6px;border-radius:6px;margin:5px 0;display:flex;justify-content:space-between;align-items:center;}
+.dark-mode li{background:#2c2c2c;color:#eee;}
+li button{background:#ff4d4d;color:white;border:none;border-radius:6px;padding:4px 6px;cursor:pointer;}
+#holidayFilters{margin-bottom:10px;}
+#holidayFilters label{margin-right:10px;}
+</style>
 </head>
 <body>
 
-  <div class="button-container">
-	<h1>Linkeim:<h1>
-	<a href="./web.html"class="link-button">Élet Meneger esemény kezelő naptár</a>
-    <a href="https://www.instagram.com/_txbor_/" target="_blank" class="link-button">Instagram</a>
-    <a href="https://discord.com/users/1190710992410251270" target="_blank" class="link-button">Discord</a>
-    <a href="https://github.com/L1lNo1ses/L1lNo1ses" target="_blank" class="link-button">GitHub</a>
-  </div>
+<button id="toggleDarkMode">🌙 Sötét mód</button>
 
+<div id="holidayFilters">
+  <label><input type="checkbox" id="filterNepi" checked> Népi ünnepek</label>
+  <label><input type="checkbox" id="filterPogany" checked> Pogány ünnepek</label>
+</div>
+
+<div class="calendar" id="calendarView">
+  <div class="month-header" id="monthHeader"></div>
+  <div class="controls">
+    <button id="prevBtn">&lt;</button>
+    <button id="switchViewBtn">Holdfázis nézet</button>
+    <button id="nextBtn">&gt;</button>
+  </div>
+  <div class="weekdays"><div>H</div><div>K</div><div>Sze</div><div>Cs</div><div>P</div><div>Szo</div><div>V</div></div>
+  <div class="days" id="daysContainer"></div>
+</div>
+
+<div class="calendar" id="moonView" style="display:none;">
+  <div class="month-header" id="monthHeaderMoon"></div>
+  <div class="controls">
+    <button id="prevMoon">&lt;</button>
+    <button id="switchBackBtn">Vissza a naptárhoz</button>
+    <button id="nextMoon">&gt;</button>
+  </div>
+  <div class="weekdays"><div>H</div><div>K</div><div>Sze</div><div>Cs</div><div>P</div><div>Szo</div><div>V</div></div>
+  <div class="days" id="moonContainer"></div>
+</div>
+
+<div id="eventPanel">
+  <h3 id="selectedDateText">Válassz ki egy napot!</h3>
+  <input type="time" id="eventTime" placeholder="Időpont">
+  <input type="text" id="eventInput" placeholder="Esemény leírása">
+  <button id="addEventBtn">Esemény hozzáadása</button>
+  <ul id="eventList"></ul>
+</div>
+
+<script>
+const monthNames=["Január","Február","Március","Április","Május","Június","Július","Augusztus","Szeptember","Október","November","December"];
+const weekdayNames=["vasárnap","hétfő","kedd","szerda","csütörtök","péntek","szombat"];
+let currentDate=new Date();
+let selectedDate=null;
+
+// ---------- Ünnepek ----------
+let holidays=[
+  {date:"12-25",name:"Karácsony",category:"népi",icon:"🎄"},
+  {date:"12-06",name:"Mikulás",category:"népi",icon:"🎅"},
+  {date:"11-01",name:"Mindenszentek",category:"népi",icon:"🕯️"},
+  {date:"10-31",name:"Halloween",category:"népi",icon:"🎃"},
+  {date:"12-31",name:"Szilveszter",category:"népi",icon:"🎉"},
+  {date:"10-31",name:"Samhain",category:"pogány",icon:"👻"},
+  {date:"0-31",name:"Imbolc",category:"pogány",icon:"❄️"},
+  {date:"2-20",name:"Ostara",category:"pogány",icon:"🌸"},
+  {date:"7-01",name:"Lughnasadh",category:"pogány",icon:"🌾"},
+  {date:"9-31",name:"Samhain",category:"pogány",icon:"🎃"}
+];
+
+// ---------- Események ----------
+function getEvents(){return JSON.parse(localStorage.getItem("events"))||{};}
+function saveEvents(e){localStorage.setItem("events",JSON.stringify(e));}
+
+// ---------- Szezonkép ----------
+function getSeasonImage(m){if([2,3,4].includes(m)) return "images/spring.jpg"; if([5,6,7].includes(m)) return "images/summer.jpg"; if([8,9,10].includes(m)) return "images/autumn.jpg"; return "images/winter.jpg";}
+
+// ---------- Holdfázis ----------
+function getMoonPhase(y,m,d){
+  const lp=29.53,newMoon=new Date(2023,0,21);
+  const daysSince=(new Date(y,m,d)-newMoon)/(1000*60*60*24);
+  const phase=daysSince%lp;
+  if(phase<1) return {icon:"🌑",name:"Újhold"};
+  if(phase<7.4) return {icon:"🌒",name:"Növekvő félhold"};
+  if(phase<14.8) return {icon:"🌕",name:"Telihold"};
+  if(phase<22.1) return {icon:"🌘",name:"Fogyó félhold"};
+  return {icon:"🌑",name:"Újhold"};
+}
+
+// ---------- Tooltip ----------
+function makeTooltip(text,target){
+  const tip=document.createElement("div");
+  tip.className="tooltip";
+  tip.innerText=text;
+  document.body.appendChild(tip);
+  target.addEventListener("mousemove",e=>{tip.style.top=(e.clientY-40)+"px";tip.style.left=(e.clientX)+"px";});
+  target.addEventListener("mouseenter",()=>tip.style.opacity="1");
+  target.addEventListener("mouseleave",()=>tip.style.opacity="0");
+}
+
+// ---------- Húsvét számítása ----------
+function getEasterDate(year){
+  const f=Math.floor,G=year%19,C=Math.floor(year/100),
+        H=(C-Math.floor(C/4)-Math.floor((8*C+13)/25)+19*G+15)%30,
+        I=H-Math.floor(H/28)*(1-Math.floor(H/28)*Math.floor(29/(H+1))*Math.floor((21-G)/11)),
+        J=(year+Math.floor(year/4)+I+2-C+Math.floor(C/4))%7,
+        L=I-J,
+        month=3+Math.floor((L+40)/44),
+        day=L+28-31*Math.floor(month/4);
+  return {month:month-1,day};
+}
+
+// ---------- Dinamikus ünnepek ----------
+function addDynamicHolidays(year){
+  holidays = holidays.filter(h => !["Húsvét","Vérhold"].includes(h.name));
+  const easter=getEasterDate(year);
+  holidays.push({date:`${easter.month+1}-${easter.day}`,name:"Húsvét",category:"népi",icon:"🐣"});
+  let verHold=null;
+  for(let m=easter.month;m<=11;m++){
+    const firstDay=(m===easter.month?easter.day+1:1);
+    const lastDay=new Date(year,m+1,0).getDate();
+    for(let d=firstDay;d<=lastDay;d++){
+      const ph=getMoonPhase(year,m,d);
+      if(ph.name==="Telihold"){verHold={month:m,day:d}; break;}
+    }
+    if(verHold) break;
+  }
+  if(verHold) holidays.push({date:`${verHold.month+1}-${verHold.day}`,name:"Vérhold",category:"pogány",icon:"🩸🌕"});
+}
+
+// ---------- Nap kijelölés ----------
+function selectDay(y,m,d,el){
+  document.querySelectorAll(".day").forEach(x=>x.classList.remove("selected"));
+  el.classList.add("selected");
+  selectedDate=`${y}-${m+1}-${d}`;
+  const date=new Date(y,m,d);
+  document.getElementById("selectedDateText").innerText=`${y}. ${monthNames[m].toLowerCase()} ${d}. ${weekdayNames[date.getDay()]}`;
+  renderEvents();
+}
+
+// ---------- Eseménylista ----------
+function renderEvents(){
+  const list=document.getElementById("eventList");
+  list.innerHTML="";
+  if(!selectedDate) return;
+  const events=getEvents()[selectedDate]||[];
+  events.sort((a,b)=>(a.time||"").localeCompare(b.time||""));
+  events.forEach((ev,i)=>{
+    const li=document.createElement("li");
+    li.innerText=`${ev.time? "["+ev.time+"] ":""}${ev.text}`;
+    const del=document.createElement("button");
+    del.innerText="X";
+    del.onclick=()=>{const all=getEvents(); all[selectedDate].splice(i,1); saveEvents(all); renderEvents(); renderCalendar(); renderMoon();};
+    li.appendChild(del);
+    list.appendChild(li);
+  });
+}
+
+// ---------- Naptár kirajzolása ----------
+function renderCalendar(){
+  const year=currentDate.getFullYear();
+  const month=currentDate.getMonth();
+  addDynamicHolidays(year);
+  document.getElementById("monthHeader").style.backgroundImage=`url(${getSeasonImage(month)})`;
+  document.getElementById("monthHeader").innerText=`${monthNames[month]} ${year}`;
+  
+  const container=document.getElementById("daysContainer");
+  container.innerHTML="";
+  const first=new Date(year,month,1);
+  let start=first.getDay(); if(start===0) start=7;
+  const last=new Date(year,month+1,0).getDate();
+  const events=getEvents();
+  const filterN=document.getElementById("filterNepi").checked;
+  const filterP=document.getElementById("filterPogany").checked;
+
+  for(let i=1;i<start;i++) container.appendChild(document.createElement("div"));
+  for(let d=1;d<=last;d++){
+    const div=document.createElement("div");
+    div.className="day";
+    div.innerText=d;
+    const key=`${year}-${month+1}-${d}`;
+    if(events[key]&&events[key].length>0) div.classList.add("has-event");
+
+    holidays.forEach(h=>{
+      const [hm,hd]=h.date.split("-").map(Number);
+      if(hm-1 === month && hd===d){
+        if((h.category==="népi"&&filterN)||(h.category==="pogány"&&filterP)){
+          div.innerText+=" "+h.icon;
+          if(h.category==="népi") div.classList.add("holiday-nepi");
+          if(h.category==="pogány") div.classList.add("holiday-pogany");
+          makeTooltip(h.name,div);
+        }
+      }
+    });
+
+    const today=new Date();
+    if(d===today.getDate()&&month===today.getMonth()&&year===today.getFullYear()) div.classList.add("today");
+
+    div.addEventListener("click",()=>selectDay(year,month,d,div));
+    container.appendChild(div);
+  }
+}
+
+// ---------- Holdfázis nézet ----------
+function renderMoon(){
+  const year=currentDate.getFullYear();
+  const month=currentDate.getMonth();
+  addDynamicHolidays(year);
+  document.getElementById("monthHeaderMoon").style.backgroundImage=`url(${getSeasonImage(month)})`;
+  document.getElementById("monthHeaderMoon").innerText=`${monthNames[month]} ${year}`;
+  
+  const container=document.getElementById("moonContainer");
+  container.innerHTML="";
+  const first=new Date(year,month,1);
+  let start=first.getDay(); if(start===0) start=7;
+  const last=new Date(year,month+1,0).getDate();
+  
+  for(let i=1;i<start;i++) container.appendChild(document.createElement("div"));
+  for(let d=1;d<=last;d++){
+    const div=document.createElement("div");
+    div.className="day";
+    const ph=getMoonPhase(year,month,d);
+    div.innerText=`${d} ${ph.icon}`;
+    makeTooltip(ph.name,div);
+    container.appendChild(div);
+  }
+}
+
+// ---------- Gombok ----------
+document.getElementById("prevBtn").onclick=()=>{currentDate.setMonth(currentDate.getMonth()-1);renderCalendar();};
+document.getElementById("nextBtn").onclick=()=>{currentDate.setMonth(currentDate.getMonth()+1);renderCalendar();};
+document.getElementById("prevMoon").onclick=()=>{currentDate.setMonth(currentDate.getMonth()-1);renderMoon();};
+document.getElementById("nextMoon").onclick=()=>{currentDate.setMonth(currentDate.getMonth()+1);renderMoon();};
+
+document.getElementById("switchViewBtn").onclick=()=>{
+  document.getElementById("calendarView").style.display="none";
+  document.getElementById("moonView").style.display="block";
+  renderMoon();
+};
+document.getElementById("switchBackBtn").onclick=()=>{
+  document.getElementById("moonView").style.display="none";
+  document.getElementById("calendarView").style.display="block";
+  renderCalendar();
+};
+
+// ---------- Esemény hozzáadása ----------
+document.getElementById("addEventBtn").onclick=()=>{
+  if(!selectedDate){alert("Először válassz egy napot!");return;}
+  const text=document.getElementById("eventInput").value.trim();
+  const time=document.getElementById("eventTime").value.trim();
+  if(!text) return;
+  const events=getEvents();
+  if(!events[selectedDate]) events[selectedDate]=[];
+  events[selectedDate].push({text,time});
+  saveEvents(events);
+  document.getElementById("eventInput").value="";
+  document.getElementById("eventTime").value="";
+  renderEvents(); renderCalendar(); renderMoon();
+};
+
+// ---------- Ünnep szűrők ----------
+document.getElementById("filterNepi").onchange=()=>renderCalendar();
+document.getElementById("filterPogany").onchange=()=>renderCalendar();
+
+// ---------- Sötét / világos mód ----------
+document.getElementById("toggleDarkMode").onclick=()=>{
+  document.body.classList.toggle("dark-mode");
+  if(document.body.classList.contains("dark-mode")) document.getElementById("toggleDarkMode").innerText="☀️ Világos mód";
+  else document.getElementById("toggleDarkMode").innerText="🌙 Sötét mód";
+};
+
+// ---------- Inicializálás ----------
+renderCalendar();
+</script>
 </body>
 </html>
